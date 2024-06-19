@@ -1,0 +1,26 @@
+version: "3.8"
+services:
+  mongo:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongoadmin
+      MONGO_INITDB_ROOT_PASSWORD: secret
+    ports:
+      - "27017:27017"
+  mongo-express:
+    image: mongo-express
+    depends_on:
+      - mongo
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: mongoadmin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: secret
+      ME_CONFIG_MONGODB_SERVER: mongo
+    ports:
+      - "8081:8081"
+# Docker Compose est un outil qui permet de définir et de lancer des applications multi-conteneurs Docker.
+# Il utilise un fichier YAML pour configurer les services de l'application.
+# Les services sont définis dans le fichier docker-compose.yml et peuvent être lancés avec la commande docker-compose up.
+# Dans cet exemple, nous avons deux services: mongo et mongo-express.
+# Le service mongo utilise l'image mongo:latest et expose le port 27017.
+# Le service mongo-express utilise l'image mongo-express et dépend du service mongo.
+# Il expose le port 8081 et utilise les variables d'environnement pour configurer l'accès à la base de données MongoDB.

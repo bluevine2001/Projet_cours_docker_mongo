@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>app de test</title>
+    <style>
+      .user {
+        background-color: #ececec;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 7px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <h1>app de test</h1>
+
+      <form id="formulaire">
+        <h2>Ajouter un utilisateur</h2>
+        <label for="name">Nom :</label>
+        <input type="text" name="name" id="name" /><br />
+        <label for="email">Email :</label>
+        <input type="text" name="email" id="email" /> <br />
+        <label for="password">Mot de passe :</label>
+        <input type="text" name="password" id="password" /> <br />
+        <button type="submit">Envoyer</button>
+      </form>
+
+      <div id="response"></div>
+
+      <div id="user-list"></div>
+    </div>
+
+    <script>
+      const app = document.getElementById("app");
+      const form = document.getElementById("formulaire");
+      const response = document.getElementById("response");
+      const userList = document.getElementById("user-list");
+
+      // Ici on va écouter l'événement submit du formulaire,
+      // on va ajouter un utilisateur quand le formulaire est soumis avec la fonction fetch.
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+
+        fetch("http://localhost:3000/create-user", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name, email, password }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
+            response.innerHTML = data.message;
+          })
+          .catch((error) => {
+            console.error(error);
+            response.innerHTML = "Erreur lors de l'envoi des données";
+          });
+      });
+
+      // Fonction pour supprimer un utilisateur avec son id puis recharge la liste des utilisateurs.
+      const deleteUser = async (id) => {
+        console.log(id);
+        fetch(`http://localhost:3000/users/${id}`, {
+          method: "DELETE",
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
+            response.innerHTML = data.message;
+            userList.innerHTML = "";
+            fetchAllUsers();
+          })
+          .catch((error) => {
+            console.error(error);
+            response.innerHTML =
+              "Erreur lors de la suppression de l'utilisateur";
+          });
+      };
+
+      // Fonction pour récupérer tous les utilisateurs.
+      const fetchAllUsers = async () => {
+        fetch("http://localhost:3000/users")
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
+            data.forEach((user) => {
+              const userElement = document.createElement("div");
+              const userId = user._id;
+              userElement.innerHTML = `
+            <div class="user">
+              <span onclick="deleteUser('${userId}')">x</span>
+              <h2>${user.name}</h2>
+              <p>${user.email}</p>
+            </div>
+            `;
+              userList.appendChild(userElement);
+            });
+          })
+          .catch((error) => {
+            console.error(error);
+            userList.innerHTML = "Erreur lors de la récupération des données";
+          });
+      };
+
+      // On appelle la fonction fetchAllUsers pour afficher la liste des utilisateurs au chargement de la page.
+      fetchAllUsers();
+
+      // pour accéder à cette interface, cliquer sur le bouton go live de vscode.
+    </script>
+  </body>
+</html>
