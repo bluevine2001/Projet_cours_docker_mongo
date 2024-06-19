@@ -1,5 +1,11 @@
 # Cours Docker mongodb-docker
 
+## prérequis :
+
+- Node js (v20.8)
+- docker desktop
+- pnpm
+
 ## Utilisation :
 
 à la racine du projet, lancer la commande suivante :
